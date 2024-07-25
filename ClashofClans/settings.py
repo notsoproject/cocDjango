@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'ClashofClans.wsgi.application'
 DATABASES = {
     'default': {
             'ENGINE': 'djongo',
-            'NAME': 'COcDB',
+            'NAME': 'ClashofClans',
             'ENFORCE_SCHEMA': True,
         'CLIENT': {
             'host': 'mongodb+srv://sameepyogi:IutbM4HMd6b5SnoB@cluster0.j6xxjxf.mongodb.net/',  # Replace with your actual connection string
@@ -140,4 +140,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = 'accounts.CustomUser'

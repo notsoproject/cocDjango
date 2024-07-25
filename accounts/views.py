@@ -11,9 +11,12 @@ import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 from .apicall import get_response
 from .db import myclient
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your views here.
-mydb = myclient["COcDB"]
+mydb = myclient["ClashofClans"]
 mycol = mydb["Users"]
 
 @login_required(login_url ='login-page')
@@ -63,7 +66,7 @@ def register_view(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
-            user = form.cleaned_data.get('username')
+            user = form.cleaned_data.get('email')
             messages.success(request, 'Account created successfully for '+user)
             return redirect('login-page')  # Redirect to a different view after successful registration
     else:
@@ -82,17 +85,18 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('profile-page')
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
         
-        if username and password:
-            user = authenticate(request, username=username, password=password)
+        if email and password:
+            user = authenticate(request, email=email, password=password)
+            print(user)
             if user is not None:
                 login(request, user)
                 return redirect('app-home-page')  # Redirect to the core app home view
                 # return redirect('profile-page')  # Redirect to a home page or another view after successful login
             else:
-                messages.error(request, 'Invalid username or password')
+                messages.error(request, 'Invalid email or password')
         else:
             messages.error(request, 'Please fill out both fields')
     
