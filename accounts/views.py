@@ -75,6 +75,7 @@ def registration_success(request):
 
     return render(request,'accounts/registration_success.html') 
 
+
 @csrf_exempt  
 def login_view(request):
     if request.user.is_authenticated:
@@ -87,7 +88,8 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('profile-page')  # Redirect to a home page or another view after successful login
+                return redirect('app-home-page')  # Redirect to the core app home view
+                # return redirect('profile-page')  # Redirect to a home page or another view after successful login
             else:
                 messages.error(request, 'Invalid username or password')
         else:
