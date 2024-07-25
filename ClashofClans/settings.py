@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -77,12 +78,25 @@ WSGI_APPLICATION = 'ClashofClans.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'djongo',
+            'NAME': 'COcDB',
+            'ENFORCE_SCHEMA': True,
+        'CLIENT': {
+            'host': 'mongodb+srv://sameepyogi:IutbM4HMd6b5SnoB@cluster0.j6xxjxf.mongodb.net/',  # Replace with your actual connection string
+            'username': 'sameepyogi',  # Replace with your MongoDB username
+            'password': 'IutbM4HMd6b5SnoB',  # Replace with your MongoDB password
+        }
     }
 }
+
 
 
 # Password validation
@@ -125,3 +139,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# AUTH_USER_MODEL = 'accounts.CustomUser'
