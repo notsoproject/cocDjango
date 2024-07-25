@@ -1,7 +1,10 @@
 # from django.shortcuts import render
 from django.shortcuts import render, redirect
-from .forms import UserCreationForm
+from .forms import CreateUserForm
 from django.http import HttpResponse, JsonResponse
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 import json
 from datetime import datetime
 import pandas as pd
@@ -53,31 +56,58 @@ def update_player_data(request):
 
 @csrf_exempt  
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('profile-page')
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        print(form)
+        form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('registration_success')  # replace with your success URL
+            user = form.cleaned_data.get('username')
+            messages.success(request, 'Account created successfully for '+user)
+            return redirect('login-page')  # Redirect to a different view after successful registration
     else:
-        form = UserCreationForm()
-    return render(request, 'accounts/register.html', {'form': form})
+        form = CreateUserForm()
+    
+    context = {'form': form}
+    return render(request, 'accounts/register.html', context)  # Ensure that the form is rendered
 
 def registration_success(request):
+
     return render(request,'accounts/registration_success.html') 
 
+@csrf_exempt  
 def login_view(request):
-    return HttpResponse('<h1>Login Here </h1>')
+    if request.user.is_authenticated:
+        return redirect('profile-page')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        if username and password:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('profile-page')  # Redirect to a home page or another view after successful login
+            else:
+                messages.error(request, 'Invalid username or password')
+        else:
+            messages.error(request, 'Please fill out both fields')
+    
+    return render(request, 'accounts/login.html')
 
+@login_required(login_url ='login-page')
 def profile_view(request):
-    return HttpResponse('<h1>Profile Here </h1>')
+    return render(request,'accounts/profile.html')
 
 def logout_view(request):
-    return HttpResponse('<h1>Logout Here </h1>')
+    logout(request)
+    return redirect('login-page')
 
+@login_required(login_url ='login-page')
 def update_profile_view(request):
     return HttpResponse('<h1>Update Profile Here </h1>')
 
+@login_required(login_url ='login-page')
 def password_change_view(request):
     return HttpResponse('<h1>Password Change Here </h1>')
 
