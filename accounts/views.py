@@ -16,6 +16,7 @@ from .db import myclient
 mydb = myclient["COcDB"]
 mycol = mydb["Users"]
 
+@login_required(login_url ='login-page')
 @csrf_exempt
 def update_player_data(request):
     print(request.method)
