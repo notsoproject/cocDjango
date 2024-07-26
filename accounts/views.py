@@ -93,6 +93,7 @@ def login_view(request):
             print(user)
             if user is not None:
                 login(request, user)
+                messages.success(request,'Login Successful')
                 return redirect('app-home-page')  # Redirect to the core app home view
                 # return redirect('profile-page')  # Redirect to a home page or another view after successful login
             else:
