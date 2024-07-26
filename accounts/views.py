@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .apicall import get_response
 from .db import myclient
 from django.contrib.auth import get_user_model
+from bson import ObjectId
 
 User = get_user_model()
 
@@ -19,14 +20,11 @@ User = get_user_model()
 mydb = myclient["ClashofClans"]
 mycol = mydb["accounts_users_details"]
 
-# @login_required(login_url ='login-page')
 @csrf_exempt
 def update_player_data(player_tag):
     try:
-        print(player_tag)
         # Replace this with your actual get_response function
         data = get_response(player_tag)
-        print(data)
 
         # Normalize the JSON data
         normalized_all = pd.json_normalize(data)
@@ -35,22 +33,72 @@ def update_player_data(player_tag):
         records = normalized_all.to_dict(orient='records')
 
         # Add createdAt field with current timestamp
-        updated_at = datetime.utcnow()
+        created_at = datetime.utcnow()
 
         # Insert or update records in MongoDB collection
         for record in records:
             tag = record.get('tag')
-            # if tag:
-            record['createdAt'] = updated_at
-            mycol.update_one({'tag': tag}, {'$set': record}, upsert=True)
-            print(f"Upserted document with tag {tag} into MongoDB.")
-            # else:
-            #     print(f"No 'tag' field found in the record: {record}")
+            if tag:
+                record['createdAt'] = created_at
+                mycol.update_one({'tag': tag}, {'$set': record}, upsert=True)
+                print(f"Upserted document with tag {tag} into MongoDB.")
+            else:
+                print(f"No 'tag' field found in the record: {record}")
 
         return True, f"Player data for tag {player_tag} processed successfully"
     except Exception as e:
         return False, str(e)
+    
+# @login_required(login_url ='login-page')
+# from bson import ObjectId
 
+@csrf_exempt
+def create_player_data(player_tag, email):
+    try:
+        print(f"Processing data for player tag: {player_tag}, email: {email}")
+        
+        # Get player data
+        data = get_response(player_tag)
+        if not data:
+            return False, "No data received from get_response"
+        
+        print(f"Received data: {data}")
+        
+        # Add email to the data
+        if isinstance(data, dict):
+            data['email'] = email
+            # data['_id'] = ObjectId()
+            # Use player_tag as the unique identifier
+            # data['_id'] = player_tag
+            
+        else:
+            return False, "Data is not in the expected format"
+        
+        # Convert to DataFrame
+        df = pd.DataFrame([data])
+        
+        # Convert DataFrame to dictionary
+        record = df.to_dict(orient='records')[0]
+        
+        # Add timestamp
+        record['updatedAt'] = datetime.utcnow()
+        
+        # Insert or update in MongoDB
+        result = mycol.update_one(
+            {'_id': player_tag},
+            {'$set': record},
+            upsert=True
+        )
+        
+        if result.modified_count > 0 or result.upserted_id:
+            print(f"Upserted document with tag {player_tag} into MongoDB.")
+            return True, f"Player data for tag {player_tag} processed successfully"
+        else:
+            return False, "No document was inserted or updated"
+        
+    except Exception as e:
+        print(f"Error in create_player_data: {str(e)}")
+        return False, str(e)
 @csrf_exempt  
 def register_view(request):
     if request.user.is_authenticated:
@@ -63,7 +111,7 @@ def register_view(request):
             player_tag = form.cleaned_data.get('playerTag')  # Assuming you've added a player_tag field to your form
             
             # Call update_player_data
-            success, message = update_player_data(player_tag)
+            success, message = create_player_data(player_tag,email)
             
             if success:
                 messages.success(request, f'Account created successfully for {email}. {message}')
