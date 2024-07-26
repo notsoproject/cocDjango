@@ -18,10 +18,9 @@ class CustomUser(AbstractUser):
     
 class Users_Details(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='details')
-    address = models.CharField(max_length=255)
-    date_of_birth = models.DateField()
-    profile_image = models.ImageField(upload_to='profile_images', blank=True, null=True)
-    additional_info = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=255)
+    trophies = models.DateField()
+
 
     def __str__(self):
         return f'{self.user.email} - Details'

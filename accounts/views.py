@@ -17,9 +17,9 @@ User = get_user_model()
 
 # Create your views here.
 mydb = myclient["ClashofClans"]
-mycol = mydb["Users"]
+mycol = mydb["accounts_users_details"]
 
-@login_required(login_url ='login-page')
+# @login_required(login_url ='login-page')
 @csrf_exempt
 def update_player_data(request):
     print(request.method)
