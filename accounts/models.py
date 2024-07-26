@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from djongo import models
 from .manager import UserManager
+
 
 class CustomUser(AbstractUser):
     username = None
@@ -18,7 +20,7 @@ class CustomUser(AbstractUser):
     
 class Users_Details(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='details')
-    name = models.CharField(max_length=255)
+    # name = models.CharField(max_length=255)
     trophies = models.DateField()
 
 

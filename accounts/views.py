@@ -21,42 +21,35 @@ mycol = mydb["accounts_users_details"]
 
 # @login_required(login_url ='login-page')
 @csrf_exempt
-def update_player_data(request):
-    print(request.method)
-    if request.method == 'POST':
-        try:
-            body = json.loads(request.body)
-            print(body)
-            player_tag = body.get('tag')
-            print(player_tag)
-            if not player_tag:
-                return JsonResponse({'error': 'Tag is required'}, status=400)
+def update_player_data(player_tag):
+    try:
+        print(player_tag)
+        # Replace this with your actual get_response function
+        data = get_response(player_tag)
+        print(data)
 
-            # Replace this with your actual get_response function
-            data = get_response(player_tag)
+        # Normalize the JSON data
+        normalized_all = pd.json_normalize(data)
 
-            # Normalize the JSON data
-            normalized_all = pd.json_normalize(data)
+        # Convert DataFrame to dictionary format suitable for MongoDB insertion
+        records = normalized_all.to_dict(orient='records')
 
-            # Convert DataFrame to dictionary format suitable for MongoDB insertion
-            records = normalized_all.to_dict(orient='records')
+        # Add createdAt field with current timestamp
+        updated_at = datetime.utcnow()
 
-            # Add createdAt field with current timestamp
-            created_at = datetime.utcnow()
+        # Insert or update records in MongoDB collection
+        for record in records:
+            tag = record.get('tag')
+            # if tag:
+            record['createdAt'] = updated_at
+            mycol.update_one({'tag': tag}, {'$set': record}, upsert=True)
+            print(f"Upserted document with tag {tag} into MongoDB.")
+            # else:
+            #     print(f"No 'tag' field found in the record: {record}")
 
-            # Insert or update records in MongoDB collection
-            for record in records:
-                tag = record.get('tag')  # Assuming 'tag' is the field name for the primary key
-                if tag:
-                    record['createdAt'] = created_at
-                    mycol.update_one({'tag': tag}, {'$set': record}, upsert=True)
-                    print(f"Upserted document with tag {tag} into MongoDB.")
-                else:
-                    print(f"No 'tag' field found in the record: {record}")
-
-            return JsonResponse({"message": f"Player data for tag {player_tag} processed successfully"})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        return True, f"Player data for tag {player_tag} processed successfully"
+    except Exception as e:
+        return False, str(e)
 
 @csrf_exempt  
 def register_view(request):
@@ -65,15 +58,24 @@ def register_view(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get('email')
-            messages.success(request, 'Account created successfully for '+user)
-            return redirect('login-page')  # Redirect to a different view after successful registration
+            user = form.save()
+            email = form.cleaned_data.get('email')
+            player_tag = form.cleaned_data.get('playerTag')  # Assuming you've added a player_tag field to your form
+            
+            # Call update_player_data
+            success, message = update_player_data(player_tag)
+            
+            if success:
+                messages.success(request, f'Account created successfully for {email}. {message}')
+            else:
+                messages.warning(request, f'Account created, but there was an issue updating player data: {message}')
+            
+            return redirect('login-page')
     else:
         form = CreateUserForm()
     
     context = {'form': form}
-    return render(request, 'accounts/register.html', context)  # Ensure that the form is rendered
+    return render(request, 'accounts/register.html', context)
 
 def registration_success(request):
 
@@ -92,6 +94,11 @@ def login_view(request):
             user = authenticate(request, email=email, password=password)
             print(user)
             if user is not None:
+                player_tag = user.playerTag
+                print(f"User's player tag: {player_tag}")
+                # Call update_player_data
+                success, message = update_player_data(player_tag)
+                print(success)
                 login(request, user)
                 messages.success(request,'Login Successful')
                 return redirect('app-home-page')  # Redirect to the core app home view
