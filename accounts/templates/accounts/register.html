@@ -1,18 +1,17 @@
-<!-- users/templates/users/register.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User Registration</title>
-</head>
-<body>
-    <h2>User Registration</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-          
-        <button type="submit">Register</button>
-    </form>
-    <p>Already Have an Account?</p> <a href = "{% url 'login-page' %}"> Login</a>
-</body>
-</html>
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="text-center mb-4">User Registration</h2>
+        <form method="POST" class="border p-4 bg-light rounded">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
+        <div class="text-center mt-3">
+            <p>Already Have an Account? <a href="{% url 'login-page' %}">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

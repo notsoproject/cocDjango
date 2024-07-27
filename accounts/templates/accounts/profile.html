@@ -1,13 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Page</title>
-</head>
-<body>
-    <h1> YOUR PROFILE HERE</h1>
-    <span>Hello, {{request.user}}</span>
-    <span><a href ="{% url 'logout-page' %}">Logout</a></span>
-</body>
-</html>
+
+{% extends 'core/base.html' %}
+
+<!-- {% block title %}Home - CoC Tracker{% endblock %} -->
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title text-center">Your Profile</h1>
+                <p class="card-text"><strong>Email:</strong> {{ user_data.email }}</p>
+                <p class="card-text"><strong>Player Tag:</strong> {{ user_data.playerTag }}</p>
+                <!-- <p class="card-text"><strong>Player Username{{user_data.username}}</strong></p> -->
+                <p class="card-text"><strong>Date Created:</strong> {{ user_data.date_joined }}</p>
+                <p class="card-text"><strong>Phone Number:</strong> {{ user_data.phone_number }}</p>
+                <div class="text-center mt-4">
+                    <a href="{% url 'logout-page' %}" class="btn btn-primary">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}

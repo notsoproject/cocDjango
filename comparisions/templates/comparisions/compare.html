@@ -1,0 +1,113 @@
+<!-- comparison_template.html -->
+{% extends 'core/base.html' %}
+{% block content %}
+
+    <div class="container mt-5">
+        <h1>Comparison Form</h1>
+        <form method="post" action="{% url 'comparision-page' %}">
+            {% csrf_token %}
+            {{ form}}
+            <button type="submit" class="btn btn-primary">Compare</button>
+        </form>
+    </div>
+    {% if comparison %}
+    <!-- <div>HELLO WORLD</div> -->
+    <div class="container mt-5">
+        <h1 class="mb-4">Player Comparison</h1>
+
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Field</th>
+                    <th>Player 1</th>
+                    <th>Player 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>{{ id1.name }}</td>
+                    <td>{{ id2.name }}</td>
+                </tr>
+                <tr>
+                    <td>Tag</td>
+                    <td>{{ id1.tag }}</td>
+                    <td>{{ id2.tag }}</td>
+                </tr>
+                <tr>
+                    <td>Town Hall Level</td>
+                    <td>{{ id1.townHallLevel }}</td>
+                    <td>{{ id2.townHallLevel }}</td>
+                </tr>
+                <tr>
+                    <td>War Stars</td>
+                    <td>{{ id1.warStars }}</td>
+                    <td>{{ id2.warStars }}</td>
+                </tr>
+                <tr>
+                    <td>Attack Wins</td>
+                    <td>{{ id1.attackWins }}</td>
+                    <td>{{ id2.donations }}</td>
+                </tr>
+                <tr>
+                    <td>Defense Wins</td>
+                    <td>{{ id1.defenseWins }}</td>
+                    <td>{{ id2.defenseWins }}</td>
+                </tr>
+                <tr>
+                    <td>Best Trophies</td>
+                    <td>{{ id1.bestTrophies }}</td>
+                    <td>{{ id2.bestTrophies }}</td>
+                </tr>
+                <tr>
+                    <td>Trophies</td>
+                    <td>{{ id1.trophies }}</td>
+                    <td>{{ id2.trophies }}</td>
+                </tr>
+                <tr>
+                    <td>Town Hall Weapon Level</td>
+                    <td>{{ id1.townHallWeaponLevel }}</td>
+                    <td>{{ id2.townHallWeaponLevel }}</td>
+                </tr>
+                <tr>
+                    <td>Builder Base Trophies</td>
+                    <td>{{ id1.builderBaseTrophies }}</td>
+                    <td>{{ id2.builderBaseTrophies }}</td>
+                </tr>
+                <tr>
+                    <td>Best Builder Base Trophies</td>
+                    <td>{{ id1.bestBuilderBaseTrophies }}</td>
+                    <td>{{ id2.bestBuilderBaseTrophies }}</td>
+                </tr>
+                <tr>
+                    <td>Builder Hall Level</td>
+                    <td>{{ id1.builderHallLevel }}</td>
+                    <td>{{ id2.builderHallLevel }}</td>
+                </tr>
+                <tr>
+                    <td>War Preference</td>
+                    <td>{{ id1.warPreference }}</td>
+                    <td>{{ id2.warPreference }}</td>
+                </tr>
+                <tr>
+                    <td>Experience Level</td>
+                    <td>{{ id1.expLevel }}</td>
+                    <td>{{ id2.expLevel }}</td>
+                </tr>
+                <tr>
+                    <td>Donations Received</td>
+                    <td>{{ id1.donationsReceived }}</td>
+                    <td>{{ id2.donationsReceived }}</td>
+                </tr>
+                <tr>
+                    <td>Donations</td>
+                    <td>{{ id1.donations }}</td>
+                    <td>{{ id2.donations }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    
+{% endblock content %}
+

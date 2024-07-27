@@ -67,9 +67,9 @@ def create_player_data(player_tag, email):
         # Add email to the data
         if isinstance(data, dict):
             data['email'] = email
-            # data['_id'] = ObjectId()
             # Use player_tag as the unique identifier
             # data['_id'] = player_tag
+            data['tag'] = player_tag  # Use player_tag as a separate field
             
         else:
             return False, "Data is not in the expected format"
@@ -81,24 +81,23 @@ def create_player_data(player_tag, email):
         record = df.to_dict(orient='records')[0]
         
         # Add timestamp
-        record['updatedAt'] = datetime.utcnow()
+        record['createdAt'] = datetime.utcnow()
+        # Ensure 'id' field is not set to avoid duplicates
+        record['id']=ObjectId()
         
-        # Insert or update in MongoDB
-        result = mycol.update_one(
-            {'_id': player_tag},
-            {'$set': record},
-            upsert=True
-        )
+        # Insert new document in MongoDB
+        result = mycol.insert_one(record)
         
-        if result.modified_count > 0 or result.upserted_id:
-            print(f"Upserted document with tag {player_tag} into MongoDB.")
+        if result.inserted_id:
+            print(f"Inserted new document with tag {player_tag} into MongoDB.")
             return True, f"Player data for tag {player_tag} processed successfully"
         else:
-            return False, "No document was inserted or updated"
+            return False, "No document was inserted"
         
     except Exception as e:
         print(f"Error in create_player_data: {str(e)}")
         return False, str(e)
+        
 @csrf_exempt  
 def register_view(request):
     if request.user.is_authenticated:
@@ -158,9 +157,34 @@ def login_view(request):
     
     return render(request, 'accounts/login.html')
 
-@login_required(login_url ='login-page')
+@login_required(login_url='login-page')
 def profile_view(request):
-    return render(request,'accounts/profile.html')
+    # Connect to MongoDB
+    mydb = myclient["ClashofClans"]
+    mycol = mydb["accounts_customuser"]
+
+    # Get the current user's username
+    username = request.user.username
+    print(request.user)
+    username = request.user
+    print(username)
+    print(type(username))
+    user_email = str(request.user.email)
+    # print(request.user.username)
+
+    # Fetch the user's data from MongoDB
+    user_data = mycol.find_one({'email': user_email})
+    print(user_data)
+
+    # Close the MongoDB connection
+    myclient.close()
+
+    # Prepare the context with user data
+    context = {
+        'user_data': user_data
+    }
+
+    return render(request, 'accounts/profile.html', context)
 
 def logout_view(request):
     logout(request)

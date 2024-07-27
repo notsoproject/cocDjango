@@ -1,22 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <h1>LOGIN PAGE</h1>
-    <p>form here</p>
-    <form method="POST">
-        {% csrf_token %}
-        <label for="id_username">Email:</label>
-        <input type="text" id="id_email" name="email" required><br><br>
-        <label for="id_password">Password:</label>
-        <input type="password" id="id_password" name="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
-
-
-</body>
-</html>
+{% extends 'core/base.html' %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="text-center mb-4">Login Page</h1>
+            <form method="POST" class="border p-4 bg-light rounded">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_email">Email:</label>
+                    <input type="text" id="id_email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Password:</label>
+                    <input type="password" id="id_password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+            <div class="text-center mt-3">
+                <p>Create an Account? <a href="{% url 'register-page' %}">Register Here</a></p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
