@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-^f(o$0sxsvu(iy=ku-s4i**o2+k4uwn87wyz9!b$qc)hkn5@ow
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['your-vercel-domain.vercel.app', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -71,6 +72,9 @@ TEMPLATES = [
         },
     },
 ]
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+
 
 WSGI_APPLICATION = 'ClashofClans.wsgi.application'
 
