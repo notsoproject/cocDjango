@@ -1,0 +1,8 @@
+*.md
+*.pyc
+*.pyo
+__pycache__/
+venv/
+tests/
+docs/
+node_modules/
