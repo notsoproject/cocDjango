@@ -4,24 +4,27 @@
       {
         "src": "ClashofClans/wsgi.py",
         "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-      },
-      {
-        "src": "build_files.sh",
-        "use": "@vercel/static-build",
         "config": {
-          "distDir": "staticfiles_build"
+          "maxLambdaSize": "250mb"
         }
       }
     ],
     "routes": [
       {
-        "src": "/static/(.*)",
-        "dest": "/static/$1"
-      },
-      {
         "src": "/(.*)",
         "dest": "ClashofClans/wsgi.py"
       }
-    ]
+    ],
+    "build": {
+      "env": {
+        "CUSTOM_ENV_VAR": "value"
+      }
+    },
+    "functions": {
+      "api/index.js": {
+        "memory": 1024,
+        "maxDuration": 10
+      }
+    }
   }
+  
